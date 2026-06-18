@@ -1,0 +1,148 @@
+# 🎬 Film ROI Predictor
+
+A machine learning web app that predicts film Return on Investment (ROI) using 15 features and three models — all wrapped in a clean Streamlit interface.
+
+---
+
+## Live App
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## Project Structure
+
+```
+film-roi-predictor/
+├── app.py                         # Streamlit web app (main entry point)
+├── requirements.txt
+├── .gitignore
+├── data/
+│   └── film_roi_dataset.csv       # 300-film synthetic training dataset
+├── models/
+│   └── feature_importances.csv    # Feature importance scores (generated)
+└── src/
+    ├── generate_data.py           # Regenerate the synthetic dataset
+    ├── train.py                   # Train & save all three models
+    ├── predict.py                 # Single & batch inference CLI
+    └── evaluate.py                # Full evaluation report
+```
+
+---
+
+## Models
+
+| Model | MAE ↓ | RMSE ↓ | R² ↑ |
+|---|---|---|---|
+| Linear Regression | 1.394 | 1.866 | 0.107 |
+| Random Forest | 1.421 | 1.893 | 0.081 |
+| **Gradient Boosting** | **1.380** | **1.917** | **0.058** |
+
+All three models are selectable in the Streamlit app sidebar.
+
+---
+
+## Features Used (15 total)
+
+### Numeric (11)
+| Feature | Description |
+|---|---|
+| `production_budget` | Total production cost (USD) |
+| `marketing_budget` | P&A spend (USD) |
+| `is_franchise` | 1 if part of a franchise |
+| `sequel_number` | 0 = original, 1+ = sequel |
+| `release_year` | Year of release |
+| `director_avg_roi` | Director's historical average ROI |
+| `lead_actor_avg_gross` | Lead actor's average film gross |
+| `trailer_views_24hr` | YouTube trailer views in first 24hr |
+| `social_buzz_score` | Aggregated social media score (0–100) |
+| `pre_release_tracking` | Audience awareness score (0–100) |
+| `rotten_tomatoes_score` | Critics score (0–100) |
+
+### Categorical (4) — encoded with OneHotEncoder
+| Feature | Values |
+|---|---|
+| `genre` | Action, Comedy, Horror, Sci-Fi, Drama, Animation, Thriller, Romance |
+| `mpaa_rating` | G, PG, PG-13, R |
+| `release_season` | Summer, Holiday, Spring, Fall |
+| `studio` | Universal, Warner Bros, Disney, Sony, Paramount, Lionsgate, A24, Netflix |
+
+---
+
+## Top Feature Importances
+
+```
+genre                    28.9%  ████████████████████████████
+trailer_views_24hr       11.1%  ███████████
+lead_actor_avg_gross      7.6%  ███████
+production_budget         7.3%  ███████
+social_buzz_score         6.7%  ██████
+rotten_tomatoes_score     6.1%  ██████
+pre_release_tracking      5.6%  █████
+director_avg_roi          5.6%  █████
+release_season            5.4%  █████
+studio                    4.1%  ████
+```
+
+---
+
+## Quickstart
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/YOUR_USERNAME/film-roi-predictor.git
+cd film-roi-predictor
+```
+
+### 2. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Run the Streamlit app
+```bash
+streamlit run app.py
+```
+
+### 4. (Optional) Retrain models from scratch
+```bash
+python src/generate_data.py   # regenerate dataset
+python src/train.py           # retrain & save artifacts
+python src/evaluate.py        # print evaluation report
+python src/predict.py         # run a sample prediction
+```
+
+---
+
+## Architecture
+
+```
+app.py
+  └── @st.cache_resource
+        └── sklearn Pipeline (per model)
+              ├── ColumnTransformer
+              │     ├── StandardScaler    (numeric features)
+              │     └── OneHotEncoder     (categorical features)
+              └── Regressor
+                    ├── LinearRegression
+                    ├── RandomForestRegressor
+                    └── GradientBoostingRegressor
+```
+
+---
+
+## Roadmap
+
+- [ ] Replace synthetic data with real Box Office Mojo / The Numbers data
+- [ ] Add XGBoost and LightGBM
+- [ ] Add opening weekend actuals as a mid-run re-predictor
+- [ ] Classification mode: Hit / Flop / Break-Even
+- [ ] Deploy to Streamlit Cloud
+
+---
+
+## License
+
+MIT
