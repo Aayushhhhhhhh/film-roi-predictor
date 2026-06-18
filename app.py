@@ -16,7 +16,7 @@ st.set_page_config(page_title="Film ROI Predictor", layout="wide", page_icon="�
 # ── Load & Train (cached so it only runs once) ───────────────────────────────
 @st.cache_resource
 def load_and_train():
-    df = pd.read_csv("data/film_roi_dataset.csv")
+    df = pd.read_csv("film_roi_dataset.csv")
 
     features = [
         "genre", "mpaa_rating", "release_season",
